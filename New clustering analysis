@@ -1,38 +1,88 @@
-#We will now concatenate the position frames of the candidates and bright controls.
+#We should compare the group of candidates with samples of stars that have the same distance distribution. We have a pool of "normal" stars we can use:
 
-anomalous_pos_frame = pd_concat([candidates_pos_frame, bright_control_group_pos_frame])
+len(normal_star_pool)
 
-#Let's calculate squared distances between all pairs of sources in the concatenated frame. We will create a new frame, where each row contains a pair of sources and their squared distance. The new frame will be ordered by distance.
+#The following function can produce a set of stars with roughly the same distance distribution as the provided data_frame. It does so by sampling 3000 stars out of our "normal" star pool, and then iteratively selecting the stars whose distances are closest to those in data_frame.
 
-apf_len = len(anomalous_pos_frame)
-apf_source_id_idx = anomalous_pos_frame.columns.get_loc('source_id')
-apf_x_idx = anomalous_pos_frame.columns.get_loc('x')
-apf_y_idx = anomalous_pos_frame.columns.get_loc('y')
-apf_z_idx = anomalous_pos_frame.columns.get_loc('z')
-new_row_list = []
-for i in range(apf_len):
-    row1 = anomalous_pos_frame.iloc[i]
-    source1 = row1[apf_source_id_idx]
-    x1 = row1[apf_x_idx]
-    y1 = row1[apf_y_idx]
-    z1 = row1[apf_z_idx]
-    for j in range(i + 1, apf_len):
-        row2 = anomalous_pos_frame.iloc[j]
-        source2 = row2[apf_source_id_idx]
-        x2 = row2[apf_x_idx]
-        y2 = row2[apf_y_idx]
-        z2 = row2[apf_z_idx]
-        distance_sq = (x2 - x1) ** 2 + (y2 - y1) ** 2 + (z2 - z1) ** 2
-        new_row_list.append([source1, source2, distance_sq])
-cross_distance_frame = pd.DataFrame(new_row_list, columns=['source1', 'source2', 'distance_sq'])
-cross_distance_frame.sort_values('distance_sq', inplace=True)
+def distance_matched_sample(data_frame, sample_size = 3000):
+    sorted_data_frame = data_frame.sort_values('distance').reset_index(drop=True)
+    sorted_pool_frame = normal_star_pool.sample(sample_size).sort_values('distance').reset_index(drop=True)
+    pool_index = 0
+    result_frame = pd.DataFrame(columns=data_frame.columns)
+    for i in range(len(sorted_data_frame)):
+        row1 = sorted_data_frame.iloc[i]
+        d1 = row1['distance']
+        min_diff = None
+        row_to_add = None
+        while True:
+            if pool_index >= len(sorted_pool_frame):
+                assert row_to_add is not None
+                result_frame.loc[len(result_frame)] = row_to_add
+                break                
+            row2 = sorted_pool_frame.iloc[pool_index]
+            d2 = row2['distance']
+            diff = np.abs(d2 - d1)
+            if min_diff is not None and diff >= min_diff:
+                result_frame.loc[len(result_frame)] = row_to_add
+                break
+            min_diff = diff
+            row_to_add = row2
+            pool_index += 1
+    return result_frame
+            
+#Let's test the function.
 
-#Further, we will add two boolean columns to the cross-distance frame indicating whether each of the sources in a pair are anomalously dim.
+_dms = distance_matched_sample(candidates)
 
-candidate_source_set = set(candidates['source_id'])
-cross_distance_frame['source1_dim'] = cross_distance_frame['source1'].isin(candidate_source_set)
-cross_distance_frame['source2_dim'] = cross_distance_frame['source2'].isin(candidate_source_set)
+_dms['distance'].describe()
 
-#The cross-distance frame looks as follows.
+#Notice that the distance distribution of _dms is nearly identical to that of candidates.
 
-cross_distance_frame.head(5)
+#Now we need some way to measure clustering. We will simply use the harmonic mean of pairwise distances. A harmonic mean will be closer to the shortest pairwise distances than even a geometric mean.
+
+def harmonic_mean_dist(data_frame):
+    apf_len = len(data_frame)
+    pos_frame = get_position_frame(data_frame)
+    apf_x_idx = pos_frame.columns.get_loc('x')
+    apf_y_idx = pos_frame.columns.get_loc('y')
+    apf_z_idx = pos_frame.columns.get_loc('z')
+    global_inv_d_sum = 0
+    pair_count = 0
+    for i in range(apf_len):
+        row1 = pos_frame.iloc[i]
+        x1 = row1[apf_x_idx]
+        y1 = row1[apf_y_idx]
+        z1 = row1[apf_z_idx]
+        for j in range(i + 1, apf_len):
+            row2 = pos_frame.iloc[j]
+            x2 = row2[apf_x_idx]
+            y2 = row2[apf_y_idx]
+            z2 = row2[apf_z_idx]
+            dist = np.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2 + (z2 - z1) ** 2)
+            assert dist != 0, '%d and %d' % (i, j,)
+            global_inv_d_sum += 1 / dist
+            pair_count += 1
+    return pair_count / global_inv_d_sum
+    
+#The harmonic mean of pairwise distances in the candidates set is:
+
+candidates_pwdhm = harmonic_mean_dist(candidates)
+candidates_pwdhm
+
+#We will run 100 simulations (which takes a few minutes) and obtain harmonic means for distance-matched samples with the same size as candidates.
+
+def simulated_harmonic_mean_dists(data_frame, n = 100):
+    cm_list = []
+    for s in range(n):
+        dm_sample = distance_matched_sample(data_frame)
+        cm = harmonic_mean_dist(dm_sample)
+        cm_list.append(cm)
+    return cm_list    
+    
+sim_pwdhms = simulated_harmonic_mean_dists(candidates)
+
+#How many simulations are better clustered than candidates?
+
+sum(1 for cm in sim_pwdhms if cm < candidates_pwdhm)
+
+#This will vary from run to run, but it should typically be no more than a few. Clustering is therefore significant.
