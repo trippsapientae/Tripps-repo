@@ -1,0 +1,11 @@
+MODEL_PREFIX = 'blend_'
+
+def error(data_frame, label_column):
+    return data_frame[label_column] - data_frame[MODEL_PREFIX + label_column]
+    
+def transform_error(data_frame):
+    new_frame = data_frame.copy()
+    new_frame['error_' + LABEL_COLUMN] = error(data_frame, LABEL_COLUMN)
+    return new_frame
+    
+work_data = transform_error(work_data)
