@@ -59,3 +59,27 @@ for ss in range(5, 2000, 10):
     count = len(sub_frame)
     freq = len(sub_frame[sub_frame['source1_dim'] & sub_frame['source2_dim']]) / count
     dim_match_frequency.loc[len(dim_match_frequency)] = [count, freq]
+
+#Let's plot the results of this test. The dashed orange line shows the expected (null hypothesis) frequency. Two additional lines show the lower bound of the 95% (red) and 99% (blue) confidence intervals.
+
+plt.rcParams['figure.figsize'] = (10, 5)
+exp_line_x = [0, 2000]
+exp_line_y = [0.25, 0.25]
+hs_counts = dim_match_frequency['count']
+tt_freqs = dim_match_frequency['frequency']
+# standard margin of error
+std_moe = np.sqrt(0.25 * (1 - 0.25) / hs_counts)
+tt_freqs_low_95 = tt_freqs - 1.96 * std_moe
+tt_freqs_low_99 = tt_freqs - 2.575 * std_moe
+plt.plot(exp_line_x, exp_line_y, '--', color='orange')
+plt.plot(hs_counts, tt_freqs, color='black', linewidth=5)
+plt.plot(hs_counts, tt_freqs_low_95, color='red', linewidth=1)
+plt.plot(hs_counts, tt_freqs_low_99, color='blue', linewidth=1)
+plt.yticks(np.linspace(0, 1, 11))
+plt.ylim(0, 1.0)
+plt.xlim(0, 2000)
+#plt.grid(color=(0.9, 0.9, 0.9,))
+plt.title('Results of clustering test')
+plt.xlabel('Size of headset of ordered cross-distance frame')
+plt.ylabel('Frequency of True-True rows')
+plt.show()
