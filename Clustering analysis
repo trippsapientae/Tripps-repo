@@ -9,3 +9,28 @@ bright_control_group['distance'].describe()
 #We will now concatenate the position frames of the candidates and bright controls.
 
 anomalous_pos_frame = pd_concat([candidates_pos_frame, bright_control_group_pos_frame])
+
+#Let's calculate squared distances between all pairs of sources in the concatenated frame. We will create a new frame, where each row contains a pair of sources and their squared distance. The new frame will be ordered by distance.
+
+apf_len = len(anomalous_pos_frame)
+apf_source_id_idx = anomalous_pos_frame.columns.get_loc('source_id')
+apf_x_idx = anomalous_pos_frame.columns.get_loc('x')
+apf_y_idx = anomalous_pos_frame.columns.get_loc('y')
+apf_z_idx = anomalous_pos_frame.columns.get_loc('z')
+new_row_list = []
+for i in range(apf_len):
+    row1 = anomalous_pos_frame.iloc[i]
+    source1 = row1[apf_source_id_idx]
+    x1 = row1[apf_x_idx]
+    y1 = row1[apf_y_idx]
+    z1 = row1[apf_z_idx]
+    for j in range(i + 1, apf_len):
+        row2 = anomalous_pos_frame.iloc[j]
+        source2 = row2[apf_source_id_idx]
+        x2 = row2[apf_x_idx]
+        y2 = row2[apf_y_idx]
+        z2 = row2[apf_z_idx]
+        distance_sq = (x2 - x1) ** 2 + (y2 - y1) ** 2 + (z2 - z1) ** 2
+        new_row_list.append([source1, source2, distance_sq])
+cross_distance_frame = pd.DataFrame(new_row_list, columns=['source1', 'source2', 'distance_sq'])
+cross_distance_frame.sort_values('distance_sq', inplace=True)
