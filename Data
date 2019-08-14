@@ -2,6 +2,8 @@ data = pd.read_csv('../input/gaia-dr2-rave-35.csv', dtype={'source_id': str})
 
 len(data)
 
+#Let's set aside a 'test' data frame we will double-check only after all of the cross-validated models and transformations are tested using a 'work' data frame.
+
 train_mask = np.random.rand(len(data)) < 0.9
 work_data = data[train_mask]
 work_data.reset_index(inplace=True, drop=True)
