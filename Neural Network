@@ -1,0 +1,13 @@
+nn_seed = np.random.randint(1,10000)
+def get_nn_trainer():
+    return MLPRegressor(hidden_layer_sizes=(30, 10), max_iter=500, alpha=0.1, random_state=nn_seed)
+    
+def get_nn_transform(label_column):
+    return get_cv_model_transform(work_data, label_column, extract_model_vars, get_nn_trainer(), 
+        n_splits=3, response_column='nn_' + label_column, scale=True)
+        
+transform_nn = get_nn_transform(LABEL_COLUMN)
+work_data = transform_nn(work_data)
+
+print_evaluation(work_data, LABEL_COLUMN, 'nn_' + LABEL_COLUMN)
+
