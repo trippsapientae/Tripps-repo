@@ -1,0 +1,3 @@
+#We will now look at some visualizations of model results. First, let's get a random sample of 1000 stars from the data.
+
+data_sample = data.sample(1000)
