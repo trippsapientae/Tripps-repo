@@ -1,0 +1,16 @@
+#Let's define a function that takes a data frame and converts distance, galactic longitude and latitude to x-y-z coordinates.
+
+def get_position_frame(data_frame):
+    new_frame = pd.DataFrame()
+    new_frame['source_id'] = data_frame['source_id'].values
+    distance = data_frame['distance'].values
+    latitude = np.deg2rad(data_frame['b'].values)
+    longitude = np.deg2rad(data_frame['l'].values)
+    new_frame['z'] = distance * np.sin(latitude)
+    projection = distance * np.cos(latitude)
+    new_frame['x'] = projection * np.cos(longitude)
+    new_frame['y'] = projection * np.sin(longitude)
+    new_frame['is_mainseq'] = (abs_mag_value(candidates, LABEL_COLUMN) > separation_y(color_value(candidates))).values
+    return new_frame
+    
+candidates_pos_frame = get_position_frame(candidates)
