@@ -14,3 +14,35 @@ def get_position_frame(data_frame):
     return new_frame
     
 candidates_pos_frame = get_position_frame(candidates)
+
+#With this position frame, we can now produce an 3D scatter chart showing the candidates in our region of space. Earth is at (0, 0, 0). Candidates in the main sequence or below are shown in blue. The rest are shown in green.
+
+def plot_pos_frame(pos_frame, mainseq_color = 'red', other_color= 'red'):
+    star_color = [(mainseq_color if v else other_color) for v in pos_frame['is_mainseq'].values]
+    trace1 = go.Scatter3d(
+        x=pos_frame['x'],
+        y=pos_frame['y'],
+        z=pos_frame['z'],
+        mode='markers',
+        text=candidates['source_id'],
+        marker=dict(
+            size=4,
+            color=star_color,
+            opacity=0.67
+        )
+    )
+    scatter_data = [trace1]
+    layout = go.Layout(
+        margin=dict(
+            l=0,
+            r=0,
+            b=0,
+            t=0
+        )
+    )
+    fig = go.Figure(data=scatter_data, layout=layout)
+    py.iplot(fig)
+    
+plot_pos_frame(candidates_pos_frame, 'blue', 'green')
+    
+    
