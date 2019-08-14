@@ -1,0 +1,13 @@
+def get_gbm_trainer():
+    return xgb.XGBRegressor(n_estimators=550, learning_rate=0.05, gamma=0.01, subsample=0.75,
+                           colsample_bytree=1.0, max_depth=8, random_state=np.random.randint(1,10000))
+                           
+def get_gbm_transform(label_column):
+    return get_cv_model_transform(work_data, label_column, extract_model_vars, 
+                get_gbm_trainer(), 
+                n_splits=2, response_column='gbm_' + label_column)
+                
+transform_gbm = get_gbm_transform(LABEL_COLUMN)
+work_data = transform_gbm(work_data)
+
+print_evaluation(work_data, LABEL_COLUMN, 'gbm_' + LABEL_COLUMN)
