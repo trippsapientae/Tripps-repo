@@ -52,3 +52,14 @@ def get_cv_model_transform(data_frame, label_extractor, var_extractor, trainer, 
         _concat_frame.reset_index(inplace=True, drop=True)
         return _concat_frame
     return _transform
+    
+    #We will also define a function that compares two frame columns, e.g. a model response and a label, for purposes of model evaluation.
+    
+    def print_evaluation(data_frame, label_column, response_column):
+    _response = response_column(data_frame) if isinstance(response_column, types.FunctionType) else data_frame[response_column]
+    _label = label_column(data_frame) if isinstance(label_column, types.FunctionType) else data_frame[label_column]
+    _error = _response - _label
+    _rmse = math.sqrt(sum(_error ** 2) / len(data_frame))
+    _correl = stats.pearsonr(_response, _label)[0]
+    print('RMSE: %.4f | Correlation: %.4f' % (_rmse, _correl,), flush=True)
+    
