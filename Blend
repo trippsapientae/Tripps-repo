@@ -1,0 +1,7 @@
+def extract_blend_vars(data_frame):
+    gbm_responses = data_frame['gbm_' + LABEL_COLUMN].values
+    gbm2_responses = data_frame['gbm2_' + LABEL_COLUMN].values
+    nn_responses = data_frame['nn_' + LABEL_COLUMN].values
+    linear_responses = data_frame['linear_' + LABEL_COLUMN].values
+    return np.transpose([gbm_responses, gbm2_responses, nn_responses, linear_responses])
+ 
