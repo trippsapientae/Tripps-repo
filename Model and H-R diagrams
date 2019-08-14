@@ -28,3 +28,22 @@ plt.show()
 def color_value(data_frame):
     return data_frame['phot_bp_mean_mag'] - data_frame['phot_rp_mean_mag']
     
+#We will add a dashed blue line to the H-R diagram, intended to separate main sequence stars from giants. The separation line is defined by the separation_y function below, which is visually derived.
+
+def separation_y(color_index):
+    return -0.1 + 4.6 * color_index
+    
+plt.rcParams['figure.figsize'] = (10, 5)
+plt.scatter(color_value(data_sample), abs_mag_value(data_sample, LABEL_COLUMN), color=(0.5,0.5,0.5,0.5,), s=1)
+plt.scatter(color_value(bright_control_group), abs_mag_value(bright_control_group, LABEL_COLUMN), color='orange', s=2)
+plt.scatter(color_value(candidates), abs_mag_value(candidates, LABEL_COLUMN), color='green', s=6)
+sep_x = np.linspace(0.5, 2.1, 100)
+sep_y = separation_y(sep_x)
+plt.plot(sep_x, sep_y, '--', color='blue')
+plt.ylim(-1, 11)
+plt.xlim(0.5, 2.1)
+plt.gca().invert_yaxis()
+plt.title('H-R Diagram')
+plt.xlabel('BP - RP color index')
+plt.ylabel('Absolute magnitude')
+plt.show()
