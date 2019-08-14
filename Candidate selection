@@ -10,3 +10,7 @@ cand_threshold = anomaly_std * CAND_SD_THRESHOLD
 candidates = data[data_anomalies >= cand_threshold]
 len(candidates)
 
+#So we have over a hundred anomalously dim candidates, at the 3-sigma level. Let's also get an equal number of anomalously bright controls.
+
+bright_control_group = data.sort_values('anomaly_' + LABEL_COLUMN, ascending=True).head(len(candidates))
+
