@@ -4,3 +4,14 @@ transform_list = [transform_init,
                   transform_linear, transform_gbm, transform_gbm2, transform_nn, 
                   transform_blend,
                   transform_error, transform_expected_error, transform_anomaly]
+                  
+#Now we'll create a function that runs the whole transform sequence on a frame, and apply it to the 'test' data we had initially set aside.
+
+def combined_transform(data_frame):
+    _frame = data_frame
+    for t in transform_list:
+        _frame = t(_frame)
+    return _frame
+    
+test_data = combined_transform(test_data)
+
