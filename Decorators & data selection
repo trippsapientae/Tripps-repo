@@ -1,0 +1,8 @@
+#Noisy data affects model precision, and also increases the likelihood that candidates will be spurious.
+
+#Defining a threshold is a subjective exercise. We want to minimize the error, but we also want a reasonable number of candidates for follow-up analyses. We will use a minimum parallax of 2.5 (400 parsecs) and a maximum parallax error of 0.2.
+
+#These thresholds can be changed below.
+
+MIN_PARALLAX = 2.5
+MAX_PARALLAX_ERROR = 0.2
