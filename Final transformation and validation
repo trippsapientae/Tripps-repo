@@ -1,0 +1,6 @@
+#Let's put all our transform functions into a list called transform_list.
+
+transform_list = [transform_init, 
+                  transform_linear, transform_gbm, transform_gbm2, transform_nn, 
+                  transform_blend,
+                  transform_error, transform_expected_error, transform_anomaly]
