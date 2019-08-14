@@ -18,3 +18,7 @@ test_data = combined_transform(test_data)
 #Let's check the 'error_' column that the 'test' data should now have.
 
 np.std(test_data['error_' + LABEL_COLUMN])
+
+#this is consistent with the RMSE observed in work_data. We can apply the full transform to the entire dataset.
+
+data = combined_transform(data)
