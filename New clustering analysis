@@ -32,3 +32,7 @@ cross_distance_frame.sort_values('distance_sq', inplace=True)
 candidate_source_set = set(candidates['source_id'])
 cross_distance_frame['source1_dim'] = cross_distance_frame['source1'].isin(candidate_source_set)
 cross_distance_frame['source2_dim'] = cross_distance_frame['source2'].isin(candidate_source_set)
+
+#The cross-distance frame looks as follows.
+
+cross_distance_frame.head(5)
