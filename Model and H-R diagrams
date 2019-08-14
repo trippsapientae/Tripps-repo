@@ -1,3 +1,9 @@
 #We will now look at some visualizations of model results. First, let's get a random sample of 1000 stars from the data.
 
 data_sample = data.sample(1000)
+
+#The abs_mag_value function below will convert a magnitude column in a data frame into an absolute magnitude.
+
+def abs_mag_value(data_frame, mag_column):
+    _distance_mod = 5 * np.log10(data_frame['distance']) - 5
+    return data_frame[mag_column] - _distance_mod
