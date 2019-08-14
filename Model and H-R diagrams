@@ -47,3 +47,13 @@ plt.title('H-R Diagram')
 plt.xlabel('BP - RP color index')
 plt.ylabel('Absolute magnitude')
 plt.show()
+
+#Anomalously dim candidates (green dots) occur both in the main sequence, and above it. We will split the candidates frame into two subgroups called candidates_bright and candidates_mainseq, using the dashed blue line.
+
+mainseq_mask = abs_mag_value(candidates, LABEL_COLUMN) > separation_y(color_value(candidates))
+candidates_mainseq = candidates[mainseq_mask]
+candidates_bright = candidates[~mainseq_mask]
+
+len(candidates_mainseq)
+
+len(candidates_bright)
