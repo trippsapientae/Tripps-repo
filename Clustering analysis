@@ -44,3 +44,9 @@ cross_distance_frame['source2_dim'] = cross_distance_frame['source2'].isin(candi
 #The cross-distance frame looks as follows.
 
 cross_distance_frame.head(5)
+
+#We're interested in rows where both sources are anomalously dim. The expectation is that True-True rows occur 25% of the time. Indeed, this is what we find if we look at the entire cross-distance frame.
+
+len(cross_distance_frame[cross_distance_frame['source1_dim'] & cross_distance_frame['source2_dim']]) / len(cross_distance_frame)
+
+
