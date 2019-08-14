@@ -19,3 +19,7 @@ def transform_init(data_frame):
     new_frame['abs_mag_ne'] = new_frame['phot_g_mean_mag'] - 5 * (np.log10(distance) - 1)
     return new_frame
 
+#Per the methodology previously outlined, we will use this first transform function to alter our work_data frame.
+
+work_data = transform_init(work_data)
+len(work_data)
