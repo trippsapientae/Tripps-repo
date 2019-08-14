@@ -5,3 +5,16 @@ def extract_blend_vars(data_frame):
     linear_responses = data_frame['linear_' + LABEL_COLUMN].values
     return np.transpose([gbm_responses, gbm2_responses, nn_responses, linear_responses])
  
+def get_blend_trainer():
+    return linear_model.LinearRegression()
+    
+def get_blend_transform(label_column):
+    return get_cv_model_transform(work_data, label_column, extract_blend_vars, get_blend_trainer(), 
+                n_splits=5, response_column='blend_' + label_column)
+                
+transform_blend = get_blend_transform(LABEL_COLUMN)
+work_data = transform_blend(work_data)
+
+print_evaluation(work_data, LABEL_COLUMN, 'blend_' + LABEL_COLUMN)
+
+#Our blend is only slightly better than our best individual model. A blend is a combination of multiple models, so it should generally be more stable (less long-tailed) than the individual models.
