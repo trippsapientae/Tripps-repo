@@ -1,0 +1,4 @@
+wd_distance_mod = 5 * (np.log10(work_data['distance']) - 1)
+wd_photo_distance_mod = 5 * (np.log10(1000.0 / work_data['r_parallax']) - 1)
+
+np.sqrt(mean_squared_error(wd_distance_mod, wd_photo_distance_mod))
