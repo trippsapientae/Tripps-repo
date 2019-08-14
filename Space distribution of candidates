@@ -45,4 +45,11 @@ def plot_pos_frame(pos_frame, mainseq_color = 'red', other_color= 'red'):
     
 plot_pos_frame(candidates_pos_frame, 'blue', 'green')
     
-    
+#Note that the 3D scatter is interactive.
+
+#Let's produce a second 3D scatter containing only the bright controls.
+
+bright_control_group_pos_frame = get_position_frame(bright_control_group)
+plot_pos_frame(bright_control_group_pos_frame, 'red', 'red')
+
+
