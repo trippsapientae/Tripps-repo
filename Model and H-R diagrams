@@ -22,3 +22,9 @@ plt.title('Model Diagram')
 plt.xlabel('Modeled absolute magnitude')
 plt.ylabel('Observed absolute magnitude')
 plt.show()
+
+#The next chart will be a Hertzsprung–Russell (H-R) diagram. We will use a color index in the X axis defined as the difference between the Gaia-provided BP and RP magnitudes.
+
+def color_value(data_frame):
+    return data_frame['phot_bp_mean_mag'] - data_frame['phot_rp_mean_mag']
+    
