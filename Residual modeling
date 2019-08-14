@@ -1,1 +1,24 @@
 #We will define a function that extracts the absolute residual array (i.e. the regression label) from a frame.
+
+def get_abs_error_label(data_frame):
+    return np.abs(data_frame['error_' + LABEL_COLUMN])
+    
+#Next, we will define a function that obtains the variables of the absolute residual meta-model.
+
+def extract_error_vars(data_frame):
+    parallax = data_frame['parallax']
+    parallax_error = data_frame['parallax_error']
+    parallax_high = parallax + parallax_error
+    parallax_low = parallax - parallax_error
+    var_error_diff = np.log(parallax_high) - np.log(parallax_low)
+    distance = data_frame['distance']
+    longitude = data_frame['l']
+    latitude = data_frame['b']
+    radial_velocity = data_frame['r_hrv']
+    return np.transpose([
+        var_error_diff,
+        distance,
+        longitude,
+        latitude,
+        radial_velocity
+    ])
