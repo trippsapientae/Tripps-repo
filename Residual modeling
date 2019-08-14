@@ -22,3 +22,16 @@ def extract_error_vars(data_frame):
         latitude,
         radial_velocity
     ])
+
+
+#The regressor we will use in this case is a Random Forest. There is a technical reason for this. Absolute residuals are always positive. We want a model that always produces positive responses. A Random Forest essentially produces averages of labels over some training examples, which is intuitively in line with what we want to accomplish.
+def get_error_trainer():
+    return RandomForestRegressor(n_estimators=200, max_depth=10, min_samples_split=2, min_samples_leaf=2)
+
+transform_expected_error = get_cv_model_transform(work_data, get_abs_error_label, extract_error_vars, get_error_trainer(), 
+                n_splits=3, response_column='expected_error_' + LABEL_COLUMN)
+                
+work_data = transform_expected_error(work_data)
+
+print_evaluation(work_data, get_abs_error_label, 'expected_error_' + LABEL_COLUMN)
+
