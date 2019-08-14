@@ -35,3 +35,12 @@ work_data = transform_expected_error(work_data)
 
 print_evaluation(work_data, get_abs_error_label, 'expected_error_' + LABEL_COLUMN)
 
+#The following transform function adds an 'anomaly_' column to a frame, defined as the ratio between the model's residual and the expected absolute residual.
+
+def transform_anomaly(data_frame):
+    new_frame = data_frame.copy()
+    new_frame['anomaly_' + LABEL_COLUMN] = new_frame['error_' + LABEL_COLUMN] / new_frame['expected_error_' + LABEL_COLUMN]
+    return new_frame
+    
+work_data = transform_anomaly(work_data)
+
