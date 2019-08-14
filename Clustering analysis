@@ -34,3 +34,9 @@ for i in range(apf_len):
         new_row_list.append([source1, source2, distance_sq])
 cross_distance_frame = pd.DataFrame(new_row_list, columns=['source1', 'source2', 'distance_sq'])
 cross_distance_frame.sort_values('distance_sq', inplace=True)
+
+#Further, we will add two boolean columns to the cross-distance frame indicating whether each of the sources in a pair are anomalously dim.
+
+candidate_source_set = set(candidates['source_id'])
+cross_distance_frame['source1_dim'] = cross_distance_frame['source1'].isin(candidate_source_set)
+cross_distance_frame['source2_dim'] = cross_distance_frame['source2'].isin(candidate_source_set)
