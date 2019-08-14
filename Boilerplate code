@@ -1,0 +1,40 @@
+import random
+import pandas as pd
+import numpy as np
+import xgboost as xgb
+import matplotlib.pyplot as plt
+import scipy.stats as stats
+import math
+import types
+import inspect
+import plotly.plotly as py
+import plotly.offline as py
+import plotly.graph_objs as go
+import warnings
+
+from matplotlib import cm
+from sklearn import linear_model
+from sklearn.model_selection import KFold
+from sklearn.metrics import mean_squared_error
+from sklearn.preprocessing import StandardScaler  
+from sklearn.neural_network import MLPRegressor
+from sklearn.ensemble import RandomForestRegressor
+
+warnings.simplefilter(action='ignore', category=DeprecationWarning)
+py.init_notebook_mode(connected=False)
+
+np.random.seed(201807002)
+
+pd_concat_argspec = inspect.getfullargspec(pd.concat)
+pd_concat_has_sort = 'sort' in pd_concat_argspec.args
+
+def pd_concat(frames):
+    # Due to Pandas versioning issue
+    new_frame = pd.concat(frames, sort=False) if pd_concat_has_sort else pd.concat(frames)
+    new_frame.reset_index(inplace=True, drop=True)
+    return new_frame
+    
+def plt_hist(x, bins=30):
+    # plt.hist() can be very slow.
+    histo, edges = np.histogram(x, bins=bins)
+    plt.bar(0.5 * edges[1:] + 0.5 * edges[:-1], histo, width=(edges[-1] - edges[0])/(len(edges) + 1))
