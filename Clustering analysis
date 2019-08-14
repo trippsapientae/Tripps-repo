@@ -4,3 +4,8 @@ candidates['distance'].describe()
 
 bright_control_group['distance'].describe()
 
+#The bright controls are only slightly farther away, by ~5% in average.
+
+#We will now concatenate the position frames of the candidates and bright controls.
+
+anomalous_pos_frame = pd_concat([candidates_pos_frame, bright_control_group_pos_frame])
