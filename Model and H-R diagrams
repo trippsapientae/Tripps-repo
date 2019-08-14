@@ -7,3 +7,18 @@ data_sample = data.sample(1000)
 def abs_mag_value(data_frame, mag_column):
     _distance_mod = 5 * np.log10(data_frame['distance']) - 5
     return data_frame[mag_column] - _distance_mod
+
+#First, let's look at a chart of modeled absolute magnitude vs. observed absolute magnitude. Our 1000 random stars are shown in gray. The set of anomalously dim stars is shown in green. The set of bright controls is shown in orange.
+
+MODEL_RESPONSE_COLUMN = MODEL_PREFIX + LABEL_COLUMN
+
+plt.rcParams['figure.figsize'] = (10, 5)
+plt.scatter(abs_mag_value(data_sample, MODEL_RESPONSE_COLUMN), abs_mag_value(data_sample, LABEL_COLUMN), color=(0.5,0.5,0.5,0.5,), s=1)
+plt.scatter(abs_mag_value(candidates, MODEL_RESPONSE_COLUMN), abs_mag_value(candidates, LABEL_COLUMN), color='green', s=6)
+plt.scatter(abs_mag_value(bright_control_group, MODEL_RESPONSE_COLUMN), abs_mag_value(bright_control_group, LABEL_COLUMN), color='orange', s=2)
+plt.ylim(-1, 11)
+plt.gca().invert_yaxis()
+plt.title('Model Diagram')
+plt.xlabel('Modeled absolute magnitude')
+plt.ylabel('Observed absolute magnitude')
+plt.show()
