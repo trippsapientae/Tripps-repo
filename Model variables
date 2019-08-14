@@ -1,0 +1,63 @@
+#Since extinction is likely irregular in our region of space, we include galactic latitude and longitude as variables. We additionally include a special transformation of the latitude based on the assumption that a region close to latitude zero has increased extinction. GR, defined below, is a hyperpameter of this special variable.
+
+GR = 100
+
+#The extract_model_vars function takes a data frame and returns a variable matrix that is ready to be used with scikit-learn-style regressors with a fit function.
+
+def extract_model_vars(data_frame):
+    distance = data_frame['distance'].values
+    log_distance = np.log(distance)
+    g_mag = data_frame['phot_g_mean_mag']
+    bp_mag = data_frame['phot_bp_mean_mag']
+    rp_mag = data_frame['phot_rp_mean_mag']
+    longitude_raw = data_frame['l'].values
+    longitude = [(lng if lng <= 180 else lng - 360) for lng in longitude_raw]
+    latitude = data_frame['b'].values
+    sin_lat = np.sin(np.deg2rad(latitude))
+    lat_ext_metric_prelim = np.abs(GR / sin_lat)
+    lat_ext_metric = [min(distance[i], lat_ext_metric_prelim[i]) for i in range(len(data_frame))]
+    metallicity = data_frame['r_metallicity']
+    radial_velocity = data_frame['r_hrv']
+    mg = data_frame['r_mg']
+    si = data_frame['r_si']
+    fe = data_frame['r_fe']
+    jmag = data_frame['r_jmag_2mass']
+    hmag = data_frame['r_hmag_2mass']
+    kmag = data_frame['r_kmag_2mass']
+    aw_m1 = data_frame['r_w1mag_allwise']
+    aw_m2 = data_frame['r_w2mag_allwise']
+    aw_m3 = data_frame['r_w3mag_allwise']
+    aw_m4 = data_frame['r_w4mag_allwise']
+    denis_imag = data_frame['r_imag_denis']
+    denis_jmag = data_frame['r_jmag_denis']
+    denis_kmag = data_frame['r_kmag_denis']    
+    apass_bmag = data_frame['r_bmag_apassdr9']
+    apass_vmag = data_frame['r_vmag_apassdr9']
+    apass_rpmag = data_frame['r_rpmag_apassdr9']
+    apass_ipmag = data_frame['r_ipmag_apassdr9']
+    
+    color1 = hmag - jmag
+    color2 = kmag - hmag
+    color3 = rp_mag - kmag
+    color4 = g_mag - rp_mag
+    color5 = bp_mag - g_mag
+    color6 = aw_m2 - aw_m1
+    color7 = aw_m3 - aw_m2
+    color8 = aw_m4 - aw_m3
+    color9 = rp_mag - aw_m4
+    color10 = g_mag - denis_imag
+    color11 = denis_imag - denis_jmag
+    color12 = denis_jmag - denis_kmag    
+    color13 = apass_rpmag - apass_ipmag
+    color14 = apass_vmag - apass_rpmag
+    color15 = apass_bmag - apass_vmag
+    color16 = g_mag - apass_bmag
+    
+    return np.transpose([log_distance, distance,
+            color1, color2, color3, color4, color5,
+            color6, color7, color8, color9,
+            color10, color11, color12,
+            color13, color14, color15, color16,
+            mg, si, fe, metallicity,
+            latitude, longitude, lat_ext_metric
+            ])    
