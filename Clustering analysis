@@ -1,0 +1,6 @@
+#Let's compare anomalously dim candidates with bright controls. Both of these subsets should have a distance bias, given that we control for the expected absolute residuals of the model, and those residuals are distance-dependent. Let's start by checking summary statistics of each of the subsets.
+
+candidates['distance'].describe()
+
+bright_control_group['distance'].describe()
+
