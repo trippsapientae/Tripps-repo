@@ -6,3 +6,16 @@
 
 MIN_PARALLAX = 2.5
 MAX_PARALLAX_ERROR = 0.2
+
+#We will also add a couple decorator columns that are useful in visualizations: the "distance" to the star in parsecs, and the absolute magnitude ("abs_mag_ne") of the star, based on the G magnitude from Gaia DR2. Interstellar extinction is neglected in the absolute magnitude estimate.
+
+def transform_init(data_frame):    
+    parallax = data_frame['parallax']
+    parallax_error = data_frame['parallax_error']
+    new_frame = data_frame[(parallax >= MIN_PARALLAX) & (parallax_error <= MAX_PARALLAX_ERROR)].copy()
+    new_frame.reset_index(inplace=True, drop=True)
+    distance = 1000.0 / new_frame['parallax']
+    new_frame['distance'] = distance
+    new_frame['abs_mag_ne'] = new_frame['phot_g_mean_mag'] - 5 * (np.log10(distance) - 1)
+    return new_frame
+
