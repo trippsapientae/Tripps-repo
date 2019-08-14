@@ -14,3 +14,6 @@ len(candidates)
 
 bright_control_group = data.sort_values('anomaly_' + LABEL_COLUMN, ascending=True).head(len(candidates))
 
+#We'll also get an equally sized list of ordinary controls.
+
+normal_control_group = data[(data_anomalies < anomaly_std) & (data_anomalies > -anomaly_std)].sample(len(candidates))
