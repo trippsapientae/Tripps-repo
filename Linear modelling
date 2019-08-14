@@ -1,0 +1,6 @@
+LABEL_COLUMN = 'phot_g_mean_mag'
+
+transform_linear = get_cv_model_transform(work_data, LABEL_COLUMN, extract_model_vars, linear_model.LinearRegression(), n_splits=2, response_column='linear_' + LABEL_COLUMN, scale=True)
+work_data = transform_linear(work_data)
+
+print_evaluation(work_data, LABEL_COLUMN, 'linear_' + LABEL_COLUMN)
