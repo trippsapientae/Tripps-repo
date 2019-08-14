@@ -1,0 +1,12 @@
+#For these reasons we will simply use a 3-sigma threshold to select our list of anomalously dim candidates.
+
+CAND_SD_THRESHOLD = 3.0
+
+data_anomalies = data['anomaly_' + LABEL_COLUMN]
+
+anomaly_std = np.std(data_anomalies)
+
+cand_threshold = anomaly_std * CAND_SD_THRESHOLD
+candidates = data[data_anomalies >= cand_threshold]
+len(candidates)
+
