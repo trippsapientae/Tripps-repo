@@ -1,0 +1,11 @@
+data = pd.read_csv('../input/gaia-dr2-rave-35.csv', dtype={'source_id': str})
+
+len(data)
+
+train_mask = np.random.rand(len(data)) < 0.9
+work_data = data[train_mask]
+work_data.reset_index(inplace=True, drop=True)
+test_data = data[~train_mask]
+test_data.reset_index(inplace=True, drop=True)
+
+data.columns
