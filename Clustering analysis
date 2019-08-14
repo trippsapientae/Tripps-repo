@@ -49,4 +49,13 @@ cross_distance_frame.head(5)
 
 len(cross_distance_frame[cross_distance_frame['source1_dim'] & cross_distance_frame['source2_dim']]) / len(cross_distance_frame)
 
+#Any subsample of the cross-distance frame should also have a frequency of True-True rows of ~25%, within statistical uncertainty, if there's no clustering that depends on the modeled anomaly.
 
+#The following code tests incremental headsets of the ordered cross-distance frame, starting with the first 5 rows.
+
+dim_match_frequency = pd.DataFrame(columns=['count', 'frequency'])
+for ss in range(5, 2000, 10):
+    sub_frame = cross_distance_frame.iloc[:ss]
+    count = len(sub_frame)
+    freq = len(sub_frame[sub_frame['source1_dim'] & sub_frame['source2_dim']]) / count
+    dim_match_frequency.loc[len(dim_match_frequency)] = [count, freq]
