@@ -83,3 +83,5 @@ plt.title('Results of clustering test')
 plt.xlabel('Size of headset of ordered cross-distance frame')
 plt.ylabel('Frequency of True-True rows')
 plt.show()
+
+#We can therefore reject the null hypothesis.
