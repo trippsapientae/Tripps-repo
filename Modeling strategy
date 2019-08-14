@@ -1,0 +1,54 @@
+def get_cv_model_transform(data_frame, label_extractor, var_extractor, trainer, response_column='Response', id_column='source_id', n_splits=2, scale = False):
+    shuffled_frame = data_frame.sample(frac=1).reset_index(drop=True)
+    nrow = len(data_frame)
+    kf = KFold(n_splits=n_splits)
+    response_map = dict()
+    default_model = None
+    default_scaler = None
+    split_idx = 0
+    for train_idx, test_idx in kf.split(shuffled_frame):
+        train_frame = shuffled_frame.iloc[train_idx]
+        test_frame = shuffled_frame.iloc[test_idx]
+        train_labels = label_extractor(train_frame) if isinstance(label_extractor, types.FunctionType) else train_frame[label_extractor]
+        train_vars = var_extractor(train_frame)
+        test_vars = var_extractor(test_frame)
+        if scale:
+            default_scaler = StandardScaler()  
+            default_scaler.fit(train_vars)
+            train_vars = default_scaler.transform(train_vars)  
+            test_vars = default_scaler.transform(test_vars) 
+        default_model = trainer.fit(train_vars, train_labels)
+        test_frame.reset_index(inplace=True, drop=True)
+        test_responses = default_model.predict(test_vars)
+        test_id = test_frame[id_column]
+        assert len(test_id) == len(test_responses)
+        for i in range(len(test_id)):
+            response = test_responses[i]
+            key = str(test_id[i])
+            response_map[key] = response
+        split_idx += 1
+    response_id_set = set(response_map)
+        
+    def _transform(_frame):
+        _in_trained_set = _frame[id_column].astype(str).isin(response_id_set)
+        _trained_frame = _frame[_in_trained_set].copy()
+        _trained_frame.reset_index(inplace=True, drop=True)
+        if len(_trained_frame) > 0:
+            _trained_id = _trained_frame[id_column]
+            _tn = len(_trained_id)
+            _response = pd.Series([None] * _tn)
+            for i in range(_tn):
+                _response[i] = response_map[str(_trained_id[i])]
+            _trained_frame[response_column] = _response
+        _remain_frame = _frame[~_in_trained_set].copy()
+        if len(_remain_frame) > 0:
+            _vars = var_extractor(_remain_frame)
+            if default_scaler is not None:
+                _vars = default_scaler.transform(_vars)
+            _response = default_model.predict(_vars)
+            _remain_frame[response_column] = _response
+        _frames_list = [_trained_frame, _remain_frame]
+        _concat_frame = pd_concat(_frames_list)
+        _concat_frame.reset_index(inplace=True, drop=True)
+        return _concat_frame
+    return _transform
