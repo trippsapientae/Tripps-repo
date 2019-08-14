@@ -15,3 +15,6 @@ def combined_transform(data_frame):
     
 test_data = combined_transform(test_data)
 
+#Let's check the 'error_' column that the 'test' data should now have.
+
+np.std(test_data['error_' + LABEL_COLUMN])
